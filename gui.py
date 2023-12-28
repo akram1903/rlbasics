@@ -8,9 +8,9 @@ SELECTED_TILE_COLOR = '#AAAAAA'
 BACKGROUND_COLOR = "#404258"
 CANVAS_BACKGROUND = "#50577A"
 SCALE = 0.7
-N = 9
-TILE_SIZE = 50
 
+
+TILE_SIZE = 50
 # setting the window
 window:Tk = Tk()
 window.geometry(f"{int(SCALE*900)}x{int(SCALE*620)}")
@@ -18,9 +18,11 @@ window.title("Suduko agent")
 window.config(background=BACKGROUND_COLOR)
 window.resizable(False,False)
 
+N = IntVar(window,5)
+
 canvas:Canvas = Canvas(window,height=600*SCALE,width=600*SCALE,background=CANVAS_BACKGROUND)
 button:Button = None
-
+entry:Entry = None
 # current_state:list[list[int]] =  []
 maze:list[list[int]]=[]
 currentPosition:int = 0
@@ -64,15 +66,15 @@ def genMaze():
     # unselect()
     global N,maze
 
-    maze = [[0 for _ in range(N)] for _ in range(N)]
+    maze = [[0 for _ in range(N.get())] for _ in range(N.get())]
 
-    for i in range(N):
-        for j in range(N):
+    for i in range(N.get()):
+        for j in range(N.get()):
             if i==j:
                 if i==0:
                     maze[i][j]=2
                     continue
-                if i==N-1:
+                if i==N.get()-1:
                     maze[i][j]=0
                     continue
 
@@ -91,8 +93,8 @@ def solveMaze():
 def drawEnvironment():
     global canvas,image_item
 
-    for i in range(N):
-        for j in range(N):
+    for i in range(N.get()):
+        for j in range(N.get()):
             image_item = canvas.create_image(TILE_SIZE*SCALE*(i+1), TILE_SIZE*SCALE*(j+1), image=monster)
 
     # global environment
@@ -111,9 +113,9 @@ def drawEnvironment():
     pass
 
 def drawMazeOutline():
-    for i in range(N):    
-        canvas.create_line(((i+1)*TILE_SIZE+20)*SCALE,0,((i+1)*TILE_SIZE+20)*SCALE,(TILE_SIZE+5)*N*SCALE,width=2*SCALE)
-        canvas.create_line(0,((i+1)*TILE_SIZE+20)*SCALE,(TILE_SIZE+5)*N*SCALE,((i+1)*TILE_SIZE+20)*SCALE,width=2*SCALE)
+    for i in range(N.get()):    
+        canvas.create_line(((i+1)*TILE_SIZE+20)*SCALE,0,((i+1)*TILE_SIZE+20)*SCALE,(TILE_SIZE+5)*N.get()*SCALE,width=2*SCALE)
+        canvas.create_line(0,((i+1)*TILE_SIZE+20)*SCALE,(TILE_SIZE+5)*N.get()*SCALE,((i+1)*TILE_SIZE+20)*SCALE,width=2*SCALE)
 def drawMaze(event=None):
     # global current_state,numberIds
     
@@ -135,8 +137,8 @@ def drawMaze(event=None):
     # pass
 
     canvas.delete('all')
-    for i in range(N):
-        for j in range(N):
+    for i in range(N.get()):
+        for j in range(N.get()):
             if maze[i][j]==1:
                 canvas.create_image((TILE_SIZE)*(j+1)*SCALE, TILE_SIZE*(i+1)*SCALE, image=monster)
             elif maze[i][j]==2:
@@ -157,7 +159,11 @@ if __name__ == "__main__":
     canvas.place(x=0,y=0)
     button=Button(window,text='generate maze',font=('arial',int(17*SCALE)),foreground='#D6E4E5',background="#404258",command=genMaze)
     button.place(x=SCALE*700,y=SCALE*200)
-
+    
+    label = Label(window,text='Enter maze size N',font=('arial',int(17*SCALE)),foreground='#D6E4E5',background=BACKGROUND_COLOR)
+    label.place(x=SCALE*650,y=SCALE*50)
+    entry=Entry(window,textvariable=N,font=('arial',int(17*SCALE)))
+    entry.place(x=SCALE*650,y=SCALE*100)
     time.sleep(2)
     
     # window.bind('<Button-1>',)
