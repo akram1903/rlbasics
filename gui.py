@@ -18,7 +18,7 @@ window.title("Suduko agent")
 window.config(background=BACKGROUND_COLOR)
 window.resizable(False,False)
 
-N = IntVar(window,5)
+N = IntVar(window,7)
 
 canvas:Canvas = Canvas(window,height=600*SCALE,width=600*SCALE,background=CANVAS_BACKGROUND)
 button:Button = None
@@ -51,6 +51,7 @@ right2=right2.zoom(2)
 monster = PhotoImage(file="Walking sprites/monster.png")
 monster=monster.zoom(1)
 
+heroId = 0
 # def printKeys(event):
 #     print(event.keysym+" key pressed")
 #     if event.keysym in ["1","2","3","4","5","6","7","8","9","BackSpace","space"]:
@@ -59,11 +60,125 @@ monster=monster.zoom(1)
 def terminate(event):
     exit()
 
+def getPosition():
+    for i in range(N.get()):
+        for j in range(N.get()):
+            if maze[i][j]==2:
+                return [i,j]
+
+def goRight(event=None):
+    global heroId
+    x:int=0
+    toggle=0
+    hero=[right1,right2]
+    [i,j] = getPosition()
+    while x<TILE_SIZE:
+
+        if heroId > 0:
+            canvas.delete(heroId)
+        
+        heroId=canvas.create_image((TILE_SIZE*(j+1)+x)*SCALE, (TILE_SIZE)*(i+1)*SCALE, image=hero[toggle])
+        canvas.update()
+        time.sleep(0.04)
+        toggle=1 if toggle==0 else 0
+        x+=2
+    if j+1<N.get():
+        maze[i][j]=0
+        maze[i][j+1]=2
+
+    for i in range(N.get()):
+        print(maze[i])
+    print('\n')
+
+    drawMaze()
+    drawMazeOutline()
+
+
+def goLeft(event=None):
+    global heroId
+    x:int=0
+    toggle=0
+    hero=[left1,left2]
+    [i,j] = getPosition()
+    while x<TILE_SIZE:
+
+        if heroId > 0:
+            canvas.delete(heroId)
+        
+        heroId=canvas.create_image((TILE_SIZE*(j+1)-x)*SCALE, (TILE_SIZE)*(i+1)*SCALE, image=hero[toggle])
+        canvas.update()
+        time.sleep(0.04)
+        toggle=1 if toggle==0 else 0
+        x+=2
+    if j-1>=0:
+        maze[i][j]=0
+        maze[i][j-1]=2
+    
+    for i in range(N.get()):
+        print(maze[i])
+    print('\n')
+
+    drawMaze()
+    drawMazeOutline()
+
+
+def goUp(event=None):
+    global heroId
+    x:int=0
+    toggle=0
+    hero=[up1,up2]
+    [i,j] = getPosition()
+    while x<TILE_SIZE:
+
+        if heroId > 0:
+            canvas.delete(heroId)
+        
+        heroId=canvas.create_image((TILE_SIZE)*(j+1)*SCALE, (TILE_SIZE*(i+1)-x)*SCALE, image=hero[toggle])
+        canvas.update()
+        time.sleep(0.04)
+        toggle=1 if toggle==0 else 0
+        x+=2
+    if i-1>=0:
+        maze[i][j]=0
+        maze[i-1][j]=2
+
+    for i in range(N.get()):
+        print(maze[i])
+    print('\n')
+
+    drawMaze()
+    drawMazeOutline()
+
+
+def goDown(event=None):
+    global heroId
+    x:int=0
+    toggle=0
+    hero=[down1,down2]
+    [i,j] = getPosition()
+    while x<TILE_SIZE:
+
+        if heroId > 0:
+            canvas.delete(heroId)
+        
+        heroId=canvas.create_image((TILE_SIZE)*(j+1)*SCALE, (TILE_SIZE*(i+1)+x)*SCALE, image=hero[toggle])
+        canvas.update()
+        time.sleep(0.04)
+        toggle=1 if toggle==0 else 0
+        x+=2
+
+    if i+1<N.get():
+        maze[i][j]=0
+        maze[i+1][j]=2
+
+    for i in range(N.get()):
+        print(maze[i])
+    print('\n')
+
+    drawMaze()
+    drawMazeOutline()
+
 def genMaze():
-    # global current_state
-    # certificate,current_state=generatePuzzle.generatePuzzle()
-    # drawPuzzle()
-    # unselect()
     global N,maze
 
     maze = [[0 for _ in range(N.get())] for _ in range(N.get())]
@@ -87,75 +202,42 @@ def genMaze():
     
 
 def solveMaze():
-
     pass
 
-def drawEnvironment():
-    global canvas,image_item
-
-    for i in range(N.get()):
-        for j in range(N.get()):
-            image_item = canvas.create_image(TILE_SIZE*SCALE*(i+1), TILE_SIZE*SCALE*(j+1), image=monster)
-
-    # global environment
-    
-    # while environment.__len__()>0:
-    #     canvas.delete(environment.pop())
-
-    # for i in range(9):
-    #     environment.append(canvas.create_line(100*i*SCALE,0,100*i*SCALE,900*SCALE,width=2*SCALE))
-    #     environment.append(canvas.create_line(0,100*i*SCALE,900*SCALE,100*i*SCALE,width=2*SCALE))
-
-    # environment.append(canvas.create_line(300*SCALE,0,300*SCALE,900*SCALE,width=5*SCALE))
-    # environment.append(canvas.create_line(600*SCALE,0,600*SCALE,900*SCALE,width=5*SCALE))
-    # environment.append(canvas.create_line(0,300*SCALE,900*SCALE,300*SCALE,width=5*SCALE))
-    # environment.append(canvas.create_line(0,600*SCALE,900*SCALE,600*SCALE,width=5*SCALE))
-    pass
 
 def drawMazeOutline():
     for i in range(N.get()):    
         canvas.create_line(((i+1)*TILE_SIZE+20)*SCALE,0,((i+1)*TILE_SIZE+20)*SCALE,(TILE_SIZE+5)*N.get()*SCALE,width=2*SCALE)
         canvas.create_line(0,((i+1)*TILE_SIZE+20)*SCALE,(TILE_SIZE+5)*N.get()*SCALE,((i+1)*TILE_SIZE+20)*SCALE,width=2*SCALE)
-def drawMaze(event=None):
-    # global current_state,numberIds
-    
 
-    
-    # for i in range(9):
-    #     for j in range(9):
-    #         canvas.delete(numberIds[i][j])
-    #         element = current_state[i][j]
-    #         if element == 0:
-    #             element = ' '
-    #         numberIds[i][j]=canvas.create_text((j*100+50)*SCALE,(i*100+50)*SCALE,text=f'{element}',font=('arial',40),fill='#D6E4E5')
-    global canvas
-    # canvas.delete(image_item)
-    # for i in range(N):
-    #     for j in range(N):
-    #         if maze[i][j]!=0:
-    #             pass
-    # pass
+
+def drawMaze(event=None):
+    global canvas,heroId
 
     canvas.delete('all')
+    
     for i in range(N.get()):
         for j in range(N.get()):
             if maze[i][j]==1:
                 canvas.create_image((TILE_SIZE)*(j+1)*SCALE, TILE_SIZE*(i+1)*SCALE, image=monster)
             elif maze[i][j]==2:
-                canvas.create_image((TILE_SIZE)*(j+1)*SCALE, TILE_SIZE*(i+1)*SCALE, image=down1)
+                heroId=canvas.create_image((TILE_SIZE)*(j+1)*SCALE, TILE_SIZE*(i+1)*SCALE, image=down1)
                 
 
     canvas.update()
     
-
-
-        
-
+def takeControl(event='test'):
+    global window
+    if window.focus_get()==entry:
+        window.focus_set()
+        print('window took control')
+    else:
+        entry.focus_set()
+        print('entry took control')
 
 if __name__ == "__main__":
     
-    
-    drawEnvironment()
+    # drawEnvironment()
     canvas.place(x=0,y=0)
     button=Button(window,text='generate maze',font=('arial',int(17*SCALE)),foreground='#D6E4E5',background="#404258",command=genMaze)
     button.place(x=SCALE*700,y=SCALE*200)
@@ -164,11 +246,14 @@ if __name__ == "__main__":
     label.place(x=SCALE*650,y=SCALE*50)
     entry=Entry(window,textvariable=N,font=('arial',int(17*SCALE)))
     entry.place(x=SCALE*650,y=SCALE*100)
-    time.sleep(2)
     
     # window.bind('<Button-1>',)
     window.bind("<Escape>",terminate)    
-    window.bind("w",drawMaze)
+    window.bind("w",goUp)
+    window.bind("s",goDown)
+    window.bind("a",goLeft)
+    window.bind("d",goRight)
+    window.bind("<Button-1>",takeControl)
     window.mainloop()
 
     
