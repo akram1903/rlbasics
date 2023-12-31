@@ -18,8 +18,11 @@ class MazeSolver:
     def generate_maze(self):
         for i in range(self.size - 1):
             for j in range(self.size - 1):
-                if np.random.rand() < self.barrier_prob:
-                    self.maze[i, j] = 1  # 1 represents a barrier
+                if i != 0 and j != 0:
+                    if np.random.rand() < self.barrier_prob:
+                        self.maze[i, j] = -1  # 1 represents a barrier
+                    
+                    
 
     def is_valid_move(self, x, y):
         return 0 <= x < self.size and 0 <= y < self.size and self.maze[x, y] == 0
@@ -29,7 +32,6 @@ class MazeSolver:
         value_function = np.zeros((self.size, self.size))
 
         for iteration in range(max_iterations):
-            print(f"\nPolicy Iteration - Iteration {iteration + 1}:\n")
 
             # Policy Evaluation
             value_function = self.evaluate_policy(value_function, discount_factor)
@@ -41,10 +43,13 @@ class MazeSolver:
             if np.array_equal(new_policy, self.policy):
                 print("Policy Converged!")
                 break
-
+            # printing Vk for the Random Policy and the greedy policy w.t.r to Vk
+            print(f"\nPolicy Iteration - Iteration {iteration + 1}:\n")
+            self.print_maze_value(value_function)
             self.policy = new_policy
-
+            print(f"\ngreedy policy w.t.r to Iteration {iteration + 1}:\n")
             self.print_maze(self.policy)
+
 
     def evaluate_policy(self, value_function, discount_factor):
         # Perform policy evaluation using iterative policy evaluation
@@ -52,7 +57,7 @@ class MazeSolver:
             for i in range(self.size):
                 for j in range(self.size):
                     # if barrier, skip
-                    if self.maze[i, j] == 1:
+                    if self.maze[i, j] == -1:
                         continue
 
                     action = self.policy[i, j]
@@ -74,7 +79,9 @@ class MazeSolver:
 
         for i in range(self.size):
             for j in range(self.size):
-                if self.maze[i, j] == 1:
+                if self.maze[i, j] == -1:
+                    # represent the barier by -1 in the policy array of actions
+                    new_policy[i,j] = -1
                     continue
 
                 # Try all possible actions and choose the one with the highest expected value
@@ -96,6 +103,7 @@ class MazeSolver:
                             max_action = action
 
                 if max_action is not None:
+                    
                     new_policy[i, j] = max_action
 
         return new_policy
@@ -113,16 +121,64 @@ class MazeSolver:
     def print_maze(self, policy):
         for i in range(self.size):
             for j in range(self.size):
-                if (i, j) == self.start_state:
-                    print("S    |", end="")
-                elif (i, j) == self.terminal_state:
+                # if (i, j) == self.start_state:
+                #     print("S    |", end="")
+                if (i, j) == self.terminal_state:
                     print("E    |", end="")
-                elif self.maze[i, j] == 1:
+                elif self.maze[i, j] == -1:
                     print("X    |", end="")
                 else:
                     action_str = "↑" if policy[i, j] == 0 else "→" if policy[i, j] == 1 else "↓" if policy[i, j] == 2 else "←"
                     print(f"{action_str}    |", end="")
             print()
+    def print_maze_value(self, values):
+        for i in range(self.size):
+            for j in range(self.size):
+                if (i, j) == self.start_state:
+                    print("S    |", end="")
+                # elif (i, j) == self.terminal_state:
+                #     print("E    |", end="")
+                elif self.maze[i, j] == 1:
+                    print("X    |", end="")
+                else:
+                    print(f"{values[i, j]:.2f} |", end="")
+            print()
+
+def find_optimal_path_with_values(value_array):
+    rows, cols = value_array.shape
+    optimal_path = []
+
+    current_position = (0, 0)
+    terminal_state = (rows - 1, cols - 1)
+
+    while current_position != terminal_state:
+        i, j = current_position
+        if value_array[i,j] == 0:
+            direction = 'U'
+            next_position = (i-1,j)
+            optimal_path.append(direction)
+        elif value_array[i,j] == 1:
+            direction = 'R'
+            next_position = (i,j+1)
+            optimal_path.append(direction)
+        elif value_array[i,j] == 2:
+            next_position = (i+1,j)
+            direction = 'D'
+            optimal_path.append(direction)
+        elif value_array[i,j] == -1:
+                return -1
+        else:
+            direction = 'L'
+            next_position = (i,j-1)
+            optimal_path.append(direction)
+
+
+
+        # Move to the next position
+        current_position = next_position
+
+    return optimal_path
+
 if __name__ == "__main__":
     size = 7
     barrier_prob = 0.3
@@ -133,3 +189,9 @@ if __name__ == "__main__":
 
     print("\nPolicy Iteration:")
     maze_solver.policy_iteration()
+    pas = find_optimal_path_with_values(maze_solver.policy)
+    if(pas != -1):
+        print(pas)
+    else:
+        print("blocked maze")
+
