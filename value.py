@@ -86,13 +86,13 @@ class MazeSolver:
         for i in range(self.size):
             for j in range(self.size):
                 if (i, j) == self.start_state:
-                    print("S    | ", end="")
+                    print("S    |", end="")
                 # elif (i, j) == self.terminal_state:
                 #     print("E    |", end="")
                 elif self.maze[i, j] == 1:
                     print("X    |", end="")
                 else:
-                    print(f"{values[i, j]:.2f}| ", end="")
+                    print(f"{values[i, j]:.2f} |", end="")
             print()
 
 if __name__ == "__main__":
