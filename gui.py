@@ -2,6 +2,8 @@
 from tkinter import *
 import random
 import time
+import policy
+import value
 # constants
 NORMAL_TILE_COLOR = '#50577A'
 SELECTED_TILE_COLOR = '#AAAAAA'
@@ -22,6 +24,7 @@ N = IntVar(window,7)
 
 canvas:Canvas = Canvas(window,height=600*SCALE,width=600*SCALE,background=CANVAS_BACKGROUND)
 button:Button = None
+solveButton:Button = None
 entry:Entry = None
 # current_state:list[list[int]] =  []
 maze:list[list[int]]=[]
@@ -179,7 +182,7 @@ def goDown(event=None):
     drawMazeOutline()
 
 def genMaze():
-    global N,maze
+    global N,maze,solveButton
 
     maze = [[0 for _ in range(N.get())] for _ in range(N.get())]
 
@@ -199,10 +202,28 @@ def genMaze():
     
     drawMaze()
     drawMazeOutline()
+
+    solveButton=Button(window,text='solve',font=('arial',int(17*SCALE)),foreground='#D6E4E5',background="#404258",command=solveMaze)
+    solveButton.place(x=SCALE*700,y=SCALE*300)
     
 
 def solveMaze():
-    pass
+
+    test = [ 'down','up','right','right']
+
+    for action in test:
+        if action.lower()=='up':
+            goUp()
+        elif action.lower()=='down':
+            goDown()
+        elif action.lower()=='left':
+            goLeft()
+        elif action.lower()=='right':
+            goRight()
+
+        else:
+            print("error in solvemaze")
+            exit(-10)
 
 
 def drawMazeOutline():
@@ -249,11 +270,11 @@ if __name__ == "__main__":
     
     # window.bind('<Button-1>',)
     window.bind("<Escape>",terminate)    
-    window.bind("w",goUp)
-    window.bind("s",goDown)
-    window.bind("a",goLeft)
-    window.bind("d",goRight)
-    window.bind("<Button-1>",takeControl)
+    # window.bind("w",goUp)
+    # window.bind("s",goDown)
+    # window.bind("a",goLeft)
+    # window.bind("d",goRight)
+    # window.bind("<Button-1>",takeControl)
     window.mainloop()
 
     
