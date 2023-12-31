@@ -1,6 +1,7 @@
 
 from tkinter import *
 import random
+import copy
 import time
 import policy
 import value
@@ -58,11 +59,17 @@ heroId = 0
 
 # create value and policy objects
 valueObject = None
+selected = StringVar(window,'')
+# selected = 'p' or 'v'
+policyObject= None
 
-# def printKeys(event):
-#     print(event.keysym+" key pressed")
-#     if event.keysym in ["1","2","3","4","5","6","7","8","9","BackSpace","space"]:
-#         editSelectedTile(event)
+# radio buttons to select v or p
+Radiobutton(window, text = "value iteration", variable = selected, 
+    value = 'v', font=('arial',11),foreground='#D6E4E5',background="#404258").place(x=SCALE*700,y=SCALE*400,) 
+Radiobutton(window, text = "policy iteration", variable = selected, 
+    value = 'p', font=('arial',11),foreground='#D6E4E5',background="#404258").place(x=SCALE*700,y=SCALE*450)
+  
+
 
 def terminate(event):
     exit()
@@ -186,7 +193,7 @@ def goDown(event=None):
     drawMazeOutline()
 
 def genMaze():
-    global N,maze,solveButton,valueObject
+    global N,maze,solveButton,valueObject,policyObject
 
     # maze = [[0 for _ in range(N.get())] for _ in range(N.get())]
 
@@ -203,8 +210,19 @@ def genMaze():
     #         maze[i][j]=random.randint(0,1)
     #     print(maze[i])
     # print('\n')
-    valueObject = value.MazeSolver(N.get(),0.2)
-    maze = valueObject.maze
+    if selected.get()=='v':
+        valueObject = value.MazeSolver(N.get(),0.2)
+        maze = valueObject.maze
+    elif selected.get()=='p':
+        policyObject = policy.MazeSolver(N.get(),0.2)
+        maze = copy.deepcopy(policyObject.maze)
+        for i in range(N.get()):
+            for j in range(N.get()):
+                if maze[i][j]==-1:
+                    maze[i][j]=1
+    else:
+        print('choose policy iteration or value iteration')
+        return
     maze[0][0]=2
     drawMaze()
     drawMazeOutline()
@@ -216,7 +234,19 @@ def genMaze():
 
 def solveMaze():
     global valueObject
-    commands=valueObject.getCommands()
+
+    # value iteration
+    if selected.get()=='v':
+        commands=valueObject.getCommands()
+
+    # policy iteration
+    elif selected.get()=='p':
+        policyObject.policy_iteration()
+        commands=policy.find_optimal_path_with_values(policyObject.policy)
+        if(commands != -1):
+            print(commands)
+        else:
+            print("blocked maze")
 
     for action in commands:
         if action.lower()=='u':
@@ -245,6 +275,8 @@ def drawMaze(event=None):
 
     canvas.delete('all')
     
+    canvas.create_text(TILE_SIZE*SCALE,TILE_SIZE*SCALE,text='S')
+    canvas.create_text(TILE_SIZE*N.get()*SCALE,TILE_SIZE*N.get()*SCALE,text='E')
     for i in range(N.get()):
         for j in range(N.get()):
             if maze[i][j]==1:
