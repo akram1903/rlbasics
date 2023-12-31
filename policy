@@ -95,7 +95,8 @@ class MazeSolver:
                             max_value = expected_value
                             max_action = action
 
-                new_policy[i, j] = max_action
+                if max_action is not None:
+                    new_policy[i, j] = max_action
 
         return new_policy
 
@@ -108,24 +109,30 @@ class MazeSolver:
             return x + 1, y
         elif action == 3:  # Left
             return x, y - 1
-
-    def print_maze(self, policy):
+    def print_maze(self, policy, value_function=None):
         for i in range(self.size):
             for j in range(self.size):
+                cell_info = ""
+
                 if (i, j) == self.start_state:
-                    print("S    | ", end="")
+                    cell_info += "S"
                 elif (i, j) == self.terminal_state:
-                    print("E    |", end="")
+                    cell_info += "E"
                 elif self.maze[i, j] == 1:
-                    print("X    |", end="")
+                    cell_info += "X"
                 else:
                     action_str = "↑" if policy[i, j] == 0 else "→" if policy[i, j] == 1 else "↓" if policy[i, j] == 2 else "←"
-                    print(f"{action_str}    | ", end="")
+                    cell_info += f"{action_str}"
+
+                    if value_function is not None:
+                        cell_info += f"({value_function[i, j]:.2f})"
+
+                print(f"{cell_info:<6} | ", end="")
             print()
 
 if __name__ == "__main__":
     size = 7
-    barrier_prob = 0.2
+    barrier_prob = 0.3
     maze_solver = MazeSolver(size, barrier_prob)
 
     print("Maze:")
