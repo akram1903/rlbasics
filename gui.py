@@ -55,6 +55,10 @@ monster = PhotoImage(file="Walking sprites/monster.png")
 monster=monster.zoom(1)
 
 heroId = 0
+
+# create value and policy objects
+valueObject = None
+
 # def printKeys(event):
 #     print(event.keysym+" key pressed")
 #     if event.keysym in ["1","2","3","4","5","6","7","8","9","BackSpace","space"]:
@@ -182,48 +186,52 @@ def goDown(event=None):
     drawMazeOutline()
 
 def genMaze():
-    global N,maze,solveButton
+    global N,maze,solveButton,valueObject
 
-    maze = [[0 for _ in range(N.get())] for _ in range(N.get())]
+    # maze = [[0 for _ in range(N.get())] for _ in range(N.get())]
 
-    for i in range(N.get()):
-        for j in range(N.get()):
-            if i==j:
-                if i==0:
-                    maze[i][j]=2
-                    continue
-                if i==N.get()-1:
-                    maze[i][j]=0
-                    continue
+    # for i in range(N.get()):
+    #     for j in range(N.get()):
+    #         if i==j:
+    #             if i==0:
+    #                 maze[i][j]=2
+    #                 continue
+    #             if i==N.get()-1:
+    #                 maze[i][j]=0
+    #                 continue
 
-            maze[i][j]=random.randint(0,1)
-        print(maze[i])
-    print('\n')
-    
+    #         maze[i][j]=random.randint(0,1)
+    #     print(maze[i])
+    # print('\n')
+    valueObject = value.MazeSolver(N.get(),0.2)
+    maze = valueObject.maze
+    maze[0][0]=2
     drawMaze()
     drawMazeOutline()
+    print(maze,end='\n\n')
 
     solveButton=Button(window,text='solve',font=('arial',int(17*SCALE)),foreground='#D6E4E5',background="#404258",command=solveMaze)
     solveButton.place(x=SCALE*700,y=SCALE*300)
     
 
 def solveMaze():
+    global valueObject
+    commands=valueObject.getCommands()
 
-    test = [ 'down','up','right','right']
-
-    for action in test:
-        if action.lower()=='up':
+    for action in commands:
+        if action.lower()=='u':
             goUp()
-        elif action.lower()=='down':
+        elif action.lower()=='d':
             goDown()
-        elif action.lower()=='left':
+        elif action.lower()=='l':
             goLeft()
-        elif action.lower()=='right':
+        elif action.lower()=='r':
             goRight()
 
         else:
             print("error in solvemaze")
             exit(-10)
+    print('Winner winner chicken dinner!!')
 
 
 def drawMazeOutline():

@@ -49,7 +49,8 @@ class MazeSolver:
             self.print_maze(value_function)
 
             if delta < theta:
-                break
+                print('\n=========================================\n')
+                return value_function
 
     def calculate_max_value(self, x, y, value_function, discount_factor):
         max_value = float('-inf')
@@ -95,14 +96,55 @@ class MazeSolver:
                     print(f"{values[i, j]:.2f} |", end="")
             print()
 
+    def getCommands(self):
+        values = self.value_iteration()
+        commands = []
+        i,j=0,0
+        nexti,nextj = 0,0
+        while i!=self.size-1 or j!=self.size-1:
+            max = float('-inf')
+            maxDir = None
+            nexti=i
+            nextj=j
+            if i-1>0 and max<values[i-1][j]:
+                max = values[i-1][j]
+                maxDir='u'
+                nexti=i-1
+            if i+1<self.size and max<values[i+1][j]:
+                max = values[i+1][j]
+                maxDir='d'
+                nexti=i+1
+            if j-1>0 and max<values[i][j-1]:
+                max = values[i][j-1]
+                maxDir='l'
+                nextj=j-1
+                nexti=i
+            if j+1<self.size and max<values[i][j+1]:
+                max = values[i][j+1] 
+                maxDir='r'
+                nextj=j+1
+                nexti=i
+
+            if maxDir is not None:
+                commands.append(maxDir)
+                i=nexti
+                j=nextj
+
+            
+        return commands
+    
 if __name__ == "__main__":
     size = 7
     barrier_prob = 0.2
     maze_solver = MazeSolver(size, barrier_prob)
 
-    print("Maze:")
-    maze_solver.print_maze(maze_solver.maze)
+    # print("Maze:")
+    # maze_solver.print_maze(maze_solver.maze)
 
-    print("\nValue Iteration:")
-    maze_solver.value_iteration()
+    # print("\nValue Iteration:")
+    # print('\n=========================================\n')
+    # maze_solver.print_maze(maze_solver.value_iteration())
+    # print('\n=========================================\n')
+    # maze_solver.print_maze(maze_solver.maze)
 
+    print(maze_solver.getCommands())
