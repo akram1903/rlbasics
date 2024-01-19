@@ -237,14 +237,25 @@ def solveMaze():
 
     # value iteration
     if selected.get()=='v':
+        tv=time.time()
         commands=valueObject.getCommands()
+        tvt=time.time()-tv
+        print('path to goal starting from state(0,0):')
+        print(commands)
+        print(f"cost of path: {len(commands)}")
+        print(f"time taken: {tvt}")
 
     # policy iteration
     elif selected.get()=='p':
+        t1=time.time()
         policyObject.policy_iteration()
+        t=time.time()-t1
         commands=policy.find_optimal_path_with_values(policyObject.policy)
-        if(commands != -1):
+        if commands != -1 :
+            print('path to goal starting from state(0,0):')
             print(commands)
+            print(f"cost of path: {len(commands)}")
+            print(f"time taken: {t}")
         else:
             print("blocked maze")
 
