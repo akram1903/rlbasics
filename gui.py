@@ -214,10 +214,12 @@ def genMaze():
     #     print(maze[i])
     # print('\n')
     if selected.get()=='v':
-        valueObject = value.MazeSolver(N.get(),0.2)
+        barrier_prob = float(input("Enter the probability of barriers (0.0 to 1.0): "))
+        valueObject = value.MazeSolver(N.get(),barrier_prob)
         maze = valueObject.maze
     elif selected.get()=='p':
-        policyObject = policy.MazeSolver(N.get(),0.2)
+        barrier_prob = float(input("Enter the probability of barriers (0.0 to 1.0): "))
+        policyObject = policy.MazeSolver(N.get(),barrier_prob)
         maze = copy.deepcopy(policyObject.maze)
         for i in range(N.get()):
             for j in range(N.get()):
@@ -240,27 +242,58 @@ def solveMaze():
 
     # value iteration
     if selected.get()=='v':
-        tv=time.time()
-        commands=valueObject.getCommands()
-        tvt=time.time()-tv
-        print('path to goal starting from state(0,0):')
-        print(commands)
-        print(f"cost of path: {len(commands)}")
-        print(f"time taken: {tvt}")
 
-    # policy iteration
-    elif selected.get()=='p':
-        t1=time.time()
-        policyObject.policy_iteration()
-        t=time.time()-t1
-        commands=policy.find_optimal_path_with_values(policyObject.policy)
-        if commands != -1 :
+        solvable = valueObject.is_solvable()
+        if solvable:
+            tv=time.time()
+            commands=valueObject.getCommands()
+            tvt=time.time()-tv
             print('path to goal starting from state(0,0):')
             print(commands)
             print(f"cost of path: {len(commands)}")
-            print(f"time taken: {t}")
+            print(f"time taken: {tvt}")
         else:
-            print("blocked maze")
+            print("Maze is not solvable")
+            return
+
+
+
+    # if(solvable):
+    #     print("Maze:")
+    #     maze_solver.print_maze(maze_solver.maze)
+
+    #     print("\nPolicy Iteration:")
+    #     maze_solver.policy_iteration()
+    #     pas = find_optimal_path_with_values(maze_solver.policy)
+    #     print("path to goal staring from state(0,0):") 
+    #     print(pas)
+    #     print(f"cost of path: {len(pas)}") 
+    # else:
+    #     print("Maze is not solvable")
+
+    # policy iteration
+        
+    
+    elif selected.get()=='p':
+        solvable = policyObject.is_solvable()
+        if solvable:
+            t1=time.time()
+            policyObject.policy_iteration()
+            t=time.time()-t1
+            commands=policy.find_optimal_path_with_values(policyObject.policy)
+
+            if commands != -1 :
+                print('path to goal starting from state(0,0):')
+                print(commands)
+                print(f"cost of path: {len(commands)}")
+                print(f"time taken: {t}")
+            else:
+                print("blocked maze")
+                return
+
+        else:
+            print("Maze is not solvable")
+            return
 
     for action in commands:
         if action.lower()=='u':
