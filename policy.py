@@ -18,10 +18,35 @@ class MazeSolver:
     def generate_maze(self):
         for i in range(self.size - 1):
             for j in range(self.size - 1):
-                if i != 0 and j != 0:
+                if i != 0 or j != 0:
                     if np.random.rand() < self.barrier_prob:
                         self.maze[i, j] = -1  # 1 represents a barrier
-                    
+        global my_maze
+        my_maze = self.maze
+        print("//------initial maze with barier------\\\\")
+        print(self.maze)
+
+    def is_solvable(self):
+        visited = set()
+
+        def dfs(x, y):
+            if not (0 <= x < self.size and 0 <= y < self.size) or my_maze[x, y] == -1 or (x, y) in visited:
+                return False
+
+            visited.add((x, y))
+
+            if (x, y) == self.terminal_state:
+                return True
+
+            directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]
+
+            for dx, dy in directions:
+                if dfs(x + dx, y + dy):
+                    return True
+
+            return False
+
+        return dfs(*self.start_state)                   
                     
 
     def is_valid_move(self, x, y):
@@ -138,7 +163,7 @@ class MazeSolver:
                     print("S    |", end="")
                 # elif (i, j) == self.terminal_state:
                 #     print("E    |", end="")
-                elif self.maze[i, j] == 1:
+                elif self.maze[i, j] == -1:
                     print("X    |", end="")
                 else:
                     print(f"{values[i, j]:.2f} |", end="")
@@ -184,14 +209,20 @@ if __name__ == "__main__":
     barrier_prob = 0.3
     maze_solver = MazeSolver(size, barrier_prob)
 
-    print("Maze:")
-    maze_solver.print_maze(maze_solver.maze)
 
-    print("\nPolicy Iteration:")
-    maze_solver.policy_iteration()
-    pas = find_optimal_path_with_values(maze_solver.policy)
-    if(pas != -1):
+    # pas = find_optimal_path_with_values(maze_solver.policy)
+    solvable = maze_solver.is_solvable()
+    if(solvable):
+        print("Maze:")
+        maze_solver.print_maze(maze_solver.maze)
+
+        print("\nPolicy Iteration:")
+        maze_solver.policy_iteration()
+        pas = find_optimal_path_with_values(maze_solver.policy)
+        print("path to goal staring from state(0,0):") 
         print(pas)
+        print(f"cost of path: {len(pas)}") 
     else:
-        print("blocked maze")
+        print("Maze is not solvable")
+
 

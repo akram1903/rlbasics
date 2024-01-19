@@ -20,8 +20,33 @@ class MazeSolver:
                 if np.random.rand() < self.barrier_prob:
                     self.maze[i, j] = 1  # 1 represents a barrier
                     # self.maze[self.size-1, self.size-1] = 0  #to make sure that the termnal state is not barrier
+        global my_maze
+        my_maze = self.maze
+        print("//------initial maze with barier------\\\\")
+        self.print_initial_maze()
+        # self.print_maze(my_maze)
 
+    def is_solvable(self):
+        visited = set()
 
+        def dfs(x, y):
+            if not (0 <= x < self.size and 0 <= y < self.size) or my_maze[x, y] == 1 or (x, y) in visited:
+                return False
+
+            visited.add((x, y))
+
+            if (x, y) == self.terminal_state:
+                return True
+
+            directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]
+
+            for dx, dy in directions:
+                if dfs(x + dx, y + dy):
+                    return True
+
+            return False
+
+        return dfs(*self.start_state)
     def is_valid_move(self, x, y):
         return 0 <= x < self.size and 0 <= y < self.size and self.maze[x, y] == 0
 
@@ -62,7 +87,7 @@ class MazeSolver:
                 # with the one-step lookahead approach. It considers the reward 
                 # for the current state-action pair plus the discounted expected value of the next state.
                 if next_x == self.size-1 and next_y == self.size-1:
-                    reward = 1 
+                    reward = 0
                 elif x == self.size-1 and y == self.size-1:
                     reward = 1
                 else:
@@ -96,7 +121,21 @@ class MazeSolver:
                     print(f"{values[i, j]:.2f} |", end="")
             print()
 
+    def print_initial_maze(self):
+        for i in range(self.size):
+            for j in range(self.size):
+                if (i, j) == (0,0):
+                    print("S    |", end="")
+                # elif (i, j) == self.terminal_state:
+                #     print("E    |", end="")
+                elif my_maze[i, j] == 1:
+                    print("X    |", end="")
+                else:
+                    print(f"{my_maze[i, j]:.2f} |", end="")
+            print()
+
     def getCommands(self):
+        # calling the value function to silve the maze 
         values = self.value_iteration()
         commands = []
         i,j=0,0
@@ -132,19 +171,18 @@ class MazeSolver:
 
             
         return commands
+ 
     
 if __name__ == "__main__":
     size = 7
-    barrier_prob = 0.2
+    barrier_prob = 0.3
     maze_solver = MazeSolver(size, barrier_prob)
+    solvable = maze_solver.is_solvable()
+    if(solvable):
+        optimal_path = maze_solver.getCommands()
+        print(optimal_path)
+        print("path to goal staring from state(0,0):") 
+        print(f"cost of path: {len(optimal_path)}") 
+    else:
 
-    # print("Maze:")
-    # maze_solver.print_maze(maze_solver.maze)
-
-    # print("\nValue Iteration:")
-    # print('\n=========================================\n')
-    # maze_solver.print_maze(maze_solver.value_iteration())
-    # print('\n=========================================\n')
-    # maze_solver.print_maze(maze_solver.maze)
-
-    print(maze_solver.getCommands())
+        print("Maze is not solvable")
