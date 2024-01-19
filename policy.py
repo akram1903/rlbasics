@@ -89,7 +89,7 @@ class MazeSolver:
                     next_x, next_y = self.get_next_position(i, j, action)
 
                     if self.is_valid_move(next_x, next_y):
-                        reward = 0
+                        reward = 2
                         if (i, j) == self.terminal_state:
                             reward = 1
 
@@ -205,8 +205,8 @@ def find_optimal_path_with_values(value_array):
     return optimal_path
 
 if __name__ == "__main__":
-    size = 7
-    barrier_prob = 0.3
+    size = int(input("Enter the size of the maze: "))
+    barrier_prob = float(input("Enter the probability of barriers (0.0 to 1.0): "))
     maze_solver = MazeSolver(size, barrier_prob)
 
 

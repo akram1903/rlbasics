@@ -82,7 +82,7 @@ class MazeSolver:
                 # with the one-step lookahead approach. It considers the reward 
                 # for the current state-action pair plus the discounted expected value of the next state.
                 if x == self.size-1 and y == self.size-1:
-                    reward = 1
+                    reward = 2
                 else:
                     reward = 0
 
@@ -156,15 +156,13 @@ class MazeSolver:
             if maxDir is not None:
                 commands.append(maxDir)
                 i=nexti
-                j=nextj
-
-            
+                j=nextj   
         return commands
  
     
 if __name__ == "__main__":
-    size = 7
-    barrier_prob = 0.3
+    size = int(input("Enter the size of the maze: "))
+    barrier_prob = float(input("Enter the probability of barriers (0.0 to 1.0): "))
     maze_solver = MazeSolver(size, barrier_prob)
     solvable = maze_solver.is_solvable()
     if(solvable):
