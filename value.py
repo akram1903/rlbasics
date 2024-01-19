@@ -82,7 +82,7 @@ class MazeSolver:
                 # with the one-step lookahead approach. It considers the reward 
                 # for the current state-action pair plus the discounted expected value of the next state.
                 if x == self.size-1 and y == self.size-1:
-                    reward = 3
+                    reward = 10
                 else:
                     reward = 0
 
@@ -104,12 +104,11 @@ class MazeSolver:
     def print_maze(self, values):
         for i in range(self.size):
             for j in range(self.size):
-                if (i, j) == self.start_state:
-                    print("S    |", end="")
-                elif self.maze[i, j] == 1:
-                    print("B    |", end="")
-                else:
-                    print(f"{values[i, j]:.2f} |", end="")
+                # to make it clean for the print we will create cell variable to be a box
+                # so the spacing will not depend on a uniqe value all will be the same
+                # S for start state , B for terminal state
+                cell = "S" if (i, j) == self.start_state else "B" if self.maze[i, j] == 1 else f"{values[i, j]:.2f}"
+                print(f"{cell:6} |", end="")
             print()
 
     def print_initial_maze(self):

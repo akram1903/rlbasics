@@ -91,7 +91,7 @@ class MazeSolver:
                     if self.is_valid_move(next_x, next_y):
                         reward = 0
                         if (i, j) == self.terminal_state:
-                            reward = 3
+                            reward = 10
 
                         # Update value function based on policy
                         value_function[i, j] = reward + discount_factor * value_function[next_x, next_y]
@@ -119,7 +119,7 @@ class MazeSolver:
                     if self.is_valid_move(next_x, next_y):
                         reward = 0
                         if (i, j) == self.terminal_state:
-                            reward =3
+                            reward =10
 
                         expected_value = reward + discount_factor * value_function[next_x, next_y]
 
@@ -156,17 +156,25 @@ class MazeSolver:
                     action_str = "↑" if policy[i, j] == 0 else "→" if policy[i, j] == 1 else "↓" if policy[i, j] == 2 else "←"
                     print(f"{action_str}    |", end="")
             print()
+    # def print_maze_value(self, values):
+    #     for i in range(self.size):
+    #         for j in range(self.size):
+    #             if (i, j) == self.start_state:
+    #                 print("S    |", end="")
+
+    #             elif self.maze[i, j] == -1:
+    #                 print("B    |", end="")
+    #             else:
+    #                 print(f"{values[i, j]:.2f} |", end="")
+    #         print()
     def print_maze_value(self, values):
         for i in range(self.size):
             for j in range(self.size):
-                if (i, j) == self.start_state:
-                    print("S    |", end="")
-                # elif (i, j) == self.terminal_state:
-                #     print("E    |", end="")
-                elif self.maze[i, j] == -1:
-                    print("B    |", end="")
-                else:
-                    print(f"{values[i, j]:.2f} |", end="")
+                # to make it clean for the print we will create cell variable to be a box
+                # so the spacing will not depend on a uniqe value all will be the same
+                # S for start state , B for terminal state
+                cell = "S" if (i, j) == self.start_state else "B" if self.maze[i, j] == 1 else f"{values[i, j]:.2f}"
+                print(f"{cell:6} |", end="")
             print()
 
 def find_optimal_path_with_values(value_array):
