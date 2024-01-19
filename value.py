@@ -82,7 +82,7 @@ class MazeSolver:
                 # with the one-step lookahead approach. It considers the reward 
                 # for the current state-action pair plus the discounted expected value of the next state.
                 if x == self.size-1 and y == self.size-1:
-                    reward = 2
+                    reward = 3
                 else:
                     reward = 0
 

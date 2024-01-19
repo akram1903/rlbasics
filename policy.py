@@ -89,9 +89,9 @@ class MazeSolver:
                     next_x, next_y = self.get_next_position(i, j, action)
 
                     if self.is_valid_move(next_x, next_y):
-                        reward = 2
+                        reward = 0
                         if (i, j) == self.terminal_state:
-                            reward = 1
+                            reward = 3
 
                         # Update value function based on policy
                         value_function[i, j] = reward + discount_factor * value_function[next_x, next_y]
@@ -119,7 +119,7 @@ class MazeSolver:
                     if self.is_valid_move(next_x, next_y):
                         reward = 0
                         if (i, j) == self.terminal_state:
-                            reward =1
+                            reward =3
 
                         expected_value = reward + discount_factor * value_function[next_x, next_y]
 
@@ -151,7 +151,7 @@ class MazeSolver:
                 if (i, j) == self.terminal_state:
                     print("E    |", end="")
                 elif self.maze[i, j] == -1:
-                    print("X    |", end="")
+                    print("B    |", end="")
                 else:
                     action_str = "↑" if policy[i, j] == 0 else "→" if policy[i, j] == 1 else "↓" if policy[i, j] == 2 else "←"
                     print(f"{action_str}    |", end="")
@@ -164,7 +164,7 @@ class MazeSolver:
                 # elif (i, j) == self.terminal_state:
                 #     print("E    |", end="")
                 elif self.maze[i, j] == -1:
-                    print("X    |", end="")
+                    print("B    |", end="")
                 else:
                     print(f"{values[i, j]:.2f} |", end="")
             print()
