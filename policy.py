@@ -90,7 +90,7 @@ class MazeSolver:
 
                     if self.is_valid_move(next_x, next_y):
                         reward = 0
-                        if (next_x, next_y) == self.terminal_state:
+                        if (i, j) == self.terminal_state:
                             reward = 1
 
                         # Update value function based on policy
@@ -118,8 +118,8 @@ class MazeSolver:
 
                     if self.is_valid_move(next_x, next_y):
                         reward = 0
-                        if (next_x, next_y) == self.terminal_state:
-                            reward = 1
+                        if (i, j) == self.terminal_state:
+                            reward =1
 
                         expected_value = reward + discount_factor * value_function[next_x, next_y]
 

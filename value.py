@@ -7,7 +7,6 @@ class MazeSolver:
         self.barrier_prob = barrier_prob
         self.maze = np.zeros((size, size))  # 0 represents an empty cell
         self.generate_maze()
-        terminal_reward = 1
 
         # Start state at top-left corner
         self.start_state = (0, 0)
@@ -15,16 +14,15 @@ class MazeSolver:
         self.terminal_state = (size - 1, size - 1)
 
     def generate_maze(self):
-        for i in range(self.size-1):
-            for j in range(self.size-1):
+        for i in range(self.size):
+            for j in range(self.size):
                 if np.random.rand() < self.barrier_prob:
                     self.maze[i, j] = 1  # 1 represents a barrier
-                    # self.maze[self.size-1, self.size-1] = 0  #to make sure that the termnal state is not barrier
+        self.maze[self.size-1, self.size-1] = 0  #to make sure that the termnal state is not barrier
         global my_maze
         my_maze = self.maze
         print("//------initial maze with barier------\\\\")
         self.print_initial_maze()
-        # self.print_maze(my_maze)
 
     def is_solvable(self):
         visited = set()
@@ -47,6 +45,7 @@ class MazeSolver:
             return False
 
         return dfs(*self.start_state)
+    
     def is_valid_move(self, x, y):
         return 0 <= x < self.size and 0 <= y < self.size and self.maze[x, y] == 0
 
@@ -63,12 +62,8 @@ class MazeSolver:
                     if self.maze[i, j] == 1:
                         continue
                     v = value_function[i, j]
-                    # if (i, j) == self.terminal_state:
-                    #     # Value of terminal state is 0
-                    #     value_function[i, j] = 0
                     # Value Iteration Updates based on 1 step lookahed
                     value_function[i, j] = self.calculate_max_value(i, j, value_function, discount_factor)
-                        # v[self.size,self.size] = value_function[i,j]+1
                     delta = max(delta, abs(v - value_function[i, j]))
             
             self.print_maze(value_function)
@@ -86,9 +81,7 @@ class MazeSolver:
                 # The formula for updating the value function is consistent
                 # with the one-step lookahead approach. It considers the reward 
                 # for the current state-action pair plus the discounted expected value of the next state.
-                if next_x == self.size-1 and next_y == self.size-1:
-                    reward = 0
-                elif x == self.size-1 and y == self.size-1:
+                if x == self.size-1 and y == self.size-1:
                     reward = 1
                 else:
                     reward = 0
@@ -113,10 +106,8 @@ class MazeSolver:
             for j in range(self.size):
                 if (i, j) == self.start_state:
                     print("S    |", end="")
-                # elif (i, j) == self.terminal_state:
-                #     print("E    |", end="")
                 elif self.maze[i, j] == 1:
-                    print("X    |", end="")
+                    print("B    |", end="")
                 else:
                     print(f"{values[i, j]:.2f} |", end="")
             print()
@@ -126,16 +117,14 @@ class MazeSolver:
             for j in range(self.size):
                 if (i, j) == (0,0):
                     print("S    |", end="")
-                # elif (i, j) == self.terminal_state:
-                #     print("E    |", end="")
                 elif my_maze[i, j] == 1:
-                    print("X    |", end="")
+                    print("B    |", end="")
                 else:
                     print(f"{my_maze[i, j]:.2f} |", end="")
             print()
 
     def getCommands(self):
-        # calling the value function to silve the maze 
+        # calling the value function to solve the maze 
         values = self.value_iteration()
         commands = []
         i,j=0,0

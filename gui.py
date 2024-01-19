@@ -5,6 +5,8 @@ import copy
 import time
 import policy
 import value
+from typing import List
+
 # constants
 NORMAL_TILE_COLOR = '#50577A'
 SELECTED_TILE_COLOR = '#AAAAAA'
@@ -28,7 +30,8 @@ button:Button = None
 solveButton:Button = None
 entry:Entry = None
 # current_state:list[list[int]] =  []
-maze:list[list[int]]=[]
+# maze:list[list[int]]=[]
+maze: List[List[int]] = []
 currentPosition:int = 0
 
 
