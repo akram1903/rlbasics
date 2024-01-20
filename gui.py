@@ -256,23 +256,6 @@ def solveMaze():
             print("Maze is not solvable")
             return
 
-
-
-    # if(solvable):
-    #     print("Maze:")
-    #     maze_solver.print_maze(maze_solver.maze)
-
-    #     print("\nPolicy Iteration:")
-    #     maze_solver.policy_iteration()
-    #     pas = find_optimal_path_with_values(maze_solver.policy)
-    #     print("path to goal staring from state(0,0):") 
-    #     print(pas)
-    #     print(f"cost of path: {len(pas)}") 
-    # else:
-    #     print("Maze is not solvable")
-
-    # policy iteration
-        
     
     elif selected.get()=='p':
         solvable = policyObject.is_solvable()

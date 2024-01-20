@@ -156,17 +156,6 @@ class MazeSolver:
                     action_str = "↑" if policy[i, j] == 0 else "→" if policy[i, j] == 1 else "↓" if policy[i, j] == 2 else "←"
                     print(f"{action_str}    |", end="")
             print()
-    # def print_maze_value(self, values):
-    #     for i in range(self.size):
-    #         for j in range(self.size):
-    #             if (i, j) == self.start_state:
-    #                 print("S    |", end="")
-
-    #             elif self.maze[i, j] == -1:
-    #                 print("B    |", end="")
-    #             else:
-    #                 print(f"{values[i, j]:.2f} |", end="")
-    #         print()
     def print_maze_value(self, values):
         for i in range(self.size):
             for j in range(self.size):
